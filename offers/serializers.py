@@ -72,6 +72,9 @@ class OfferPublicSerializer(serializers.ModelSerializer):
 
         return out
 
+    def get_list(self, obj):
+        return [f.text for f in obj.features.all().order_by("sort_order", "id")]
+
 
 class OfferDeviceVideoSerializer(serializers.ModelSerializer):
     mobile_src = serializers.SerializerMethodField()
@@ -100,5 +103,3 @@ class OfferDeviceVideoSerializer(serializers.ModelSerializer):
 
     def get_src(self, obj):
         return self.get_desktop_src(obj) or self.get_mobile_src(obj)
-    def get_list(self, obj):
-        return [f.text for f in obj.features.all().order_by("sort_order", "id")]

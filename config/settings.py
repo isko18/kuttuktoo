@@ -84,6 +84,21 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
+try:
+    import drf_spectacular  # noqa: F401
+except Exception:
+    drf_spectacular = None
+
+if drf_spectacular is not None:
+    INSTALLED_APPS.append("drf_spectacular")
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
+    SPECTACULAR_SETTINGS = {
+        "TITLE": "kuttuktoo API",
+        "DESCRIPTION": "API документация",
+        "VERSION": "1.0.0",
+    }
+
 LANGUAGE_CODE = "ru-ru"
 TIME_ZONE = "Asia/Bishkek"
 USE_I18N = True
