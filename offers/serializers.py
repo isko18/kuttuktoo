@@ -42,9 +42,8 @@ class OfferPublicSerializer(serializers.ModelSerializer):
 
         out = []
 
-        device_qs = getattr(obj, "device_videos", None)
-        device_items = device_qs.all().order_by("sort_order", "id") if device_qs is not None else []
-        for v in device_items:
+        v = getattr(obj, "device_video", None)
+        if v:
             mobile_src = _build(v.mobile_file)
             desktop_src = _build(v.desktop_file)
             out.append(
@@ -83,7 +82,7 @@ class OfferDeviceVideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfferDeviceVideo
-        fields = ("id", "src", "mobile_src", "desktop_src", "duration", "sort_order")
+        fields = ("id", "src", "mobile_src", "desktop_src", "duration")
 
     def _build(self, file_field):
         try:

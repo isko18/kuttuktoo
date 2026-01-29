@@ -84,6 +84,14 @@ class Offer(models.Model):
         default=True,
         verbose_name="Активен",
     )
+    device_video = models.OneToOneField(
+        "OfferDeviceVideo",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="offer",
+        verbose_name="Видео (мобилка/ПК)",
+    )
 
     def __str__(self):
         return f"{self.title} ({self.key})"
@@ -155,12 +163,6 @@ class OfferVideo(models.Model):
 class OfferDeviceVideo(models.Model):
     """Новое видео с отдельными файлами для мобилки и ПК."""
 
-    offer = models.ForeignKey(
-        Offer,
-        on_delete=models.CASCADE,
-        related_name="device_videos",
-        verbose_name="Тариф",
-    )
     desktop_file = models.FileField(
         upload_to="offers/videos/desktop/",
         verbose_name="Видео для ПК",
@@ -177,15 +179,11 @@ class OfferDeviceVideo(models.Model):
         verbose_name="Длительность",
         help_text='Например: "0:56"',
     )
-    sort_order = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Порядок сортировки",
-    )
 
     class Meta:
-        ordering = ["sort_order", "id"]
+        ordering = ["id"]
         verbose_name = "Видео тарифа (по устройствам)"
         verbose_name_plural = "Видео тарифов (по устройствам)"
 
     def __str__(self):
-        return f"{self.offer.key}: device_video#{self.id}"
+        return f"device_video#{self.id}"

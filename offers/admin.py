@@ -13,18 +13,12 @@ class OfferVideoInline(admin.TabularInline):
     fields = ("file", "duration", "sort_order")
 
 
-class OfferDeviceVideoInline(admin.TabularInline):
-    model = OfferDeviceVideo
-    extra = 0
-    fields = ("desktop_file", "mobile_file", "duration", "sort_order")
-
-
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
     list_display = ("key", "title", "price", "badge", "sort_order", "is_active")
     list_editable = ("sort_order", "is_active")
     search_fields = ("key", "title")
-    inlines = [OfferDeviceVideoInline, OfferVideoInline, OfferFeatureInline]
+    inlines = [OfferVideoInline, OfferFeatureInline]
 
 
 @admin.register(SiteSettings)
@@ -34,7 +28,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(OfferDeviceVideo)
 class OfferDeviceVideoAdmin(admin.ModelAdmin):
-    list_display = ("offer", "id", "sort_order", "duration")
-    list_filter = ("offer",)
-    search_fields = ("offer__key", "offer__title")
-    ordering = ("offer__sort_order", "offer__id", "sort_order", "id")
+    list_display = ("id", "duration")
+    search_fields = ("id",)
+    ordering = ("id",)

@@ -19,6 +19,7 @@ class OfferListView(generics.ListAPIView):
     def get_queryset(self):
         return (
             Offer.objects.filter(is_active=True)
+            .select_related("device_video")
             .prefetch_related("videos", "features")
             .order_by("sort_order", "id")
         )
@@ -30,7 +31,15 @@ class OfferDeviceVideoListView(generics.ListAPIView):
 
     def get_queryset(self):
         key = self.kwargs.get("key")
-        qs = OfferDeviceVideo.objects.select_related("offer").order_by("sort_order", "id")
-        if key:
-            qs = qs.filter(offer__key=key)
-        return qs
+        qs = OfferDeviceVideo.objects.all().order_by("id")
+        if not key:
+            return qs
+
+        try:
+            offer = Offer.objects.select_related("device_video").only("id", "device_video").get(key=key)
+        except Offer.DoesNotExist:
+            return qs.none()
+
+        if not offer.device_video_id:
+            return qs.none()
+        return qs.filter(id=offer.device_video_id)
