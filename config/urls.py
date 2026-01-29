@@ -5,17 +5,27 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 try:
-    from drf_spectacular.views import (
-        SpectacularAPIView,
-        SpectacularSwaggerView,
-        SpectacularRedocView,
-    )
+    from drf_yasg.views import get_schema_view
+    from drf_yasg import openapi
+    from rest_framework import permissions
 except Exception:
-    SpectacularAPIView = None
-    SpectacularSwaggerView = None
-    SpectacularRedocView = None
+    get_schema_view = None
+    openapi = None
+    permissions = None
 
 spa_view = TemplateView.as_view(template_name="index.html")
+
+schema_view = None
+if get_schema_view is not None:
+    schema_view = get_schema_view(
+        openapi.Info(
+            title="kuttuktoo API",
+            default_version="v1",
+            description="API документация",
+        ),
+        public=True,
+        permission_classes=[permissions.AllowAny],
+    )
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,11 +33,11 @@ urlpatterns = [
     # API
     *(
         [
-            path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-            path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-            path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+            re_path(r"^api/swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
+            path("api/docs/", schema_view.with_ui("swagger", cache_timeout=0), name="swagger-ui"),
+            path("api/redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="redoc"),
         ]
-        if SpectacularAPIView is not None
+        if get_schema_view is not None
         else []
     ),
     path("api/", include("offers.urls")),

@@ -85,19 +85,12 @@ REST_FRAMEWORK = {
 }
 
 try:
-    import drf_spectacular  # noqa: F401
+    import drf_yasg  # noqa: F401
 except Exception:
-    drf_spectacular = None
+    drf_yasg = None
 
-if drf_spectacular is not None:
-    INSTALLED_APPS.append("drf_spectacular")
-    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
-
-    SPECTACULAR_SETTINGS = {
-        "TITLE": "kuttuktoo API",
-        "DESCRIPTION": "API документация",
-        "VERSION": "1.0.0",
-    }
+if drf_yasg is not None:
+    INSTALLED_APPS.append("drf_yasg")
 
 LANGUAGE_CODE = "ru-ru"
 TIME_ZONE = "Asia/Bishkek"
