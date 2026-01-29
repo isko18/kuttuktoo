@@ -120,6 +120,8 @@ class OfferFeature(models.Model):
 
 
 class OfferVideo(models.Model):
+    """Старые одиночные видео (оставляем для обратной совместимости)."""
+
     offer = models.ForeignKey(
         Offer,
         on_delete=models.CASCADE,
@@ -148,3 +150,42 @@ class OfferVideo(models.Model):
 
     def __str__(self):
         return f"{self.offer.key}: video#{self.id}"
+
+
+class OfferDeviceVideo(models.Model):
+    """Новое видео с отдельными файлами для мобилки и ПК."""
+
+    offer = models.ForeignKey(
+        Offer,
+        on_delete=models.CASCADE,
+        related_name="device_videos",
+        verbose_name="Тариф",
+    )
+    desktop_file = models.FileField(
+        upload_to="offers/videos/desktop/",
+        verbose_name="Видео для ПК",
+    )
+    mobile_file = models.FileField(
+        upload_to="offers/videos/mobile/",
+        null=True,
+        blank=True,
+        verbose_name="Видео для мобилки",
+    )
+    duration = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name="Длительность",
+        help_text='Например: "0:56"',
+    )
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Порядок сортировки",
+    )
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name = "Видео тарифа (по устройствам)"
+        verbose_name_plural = "Видео тарифов (по устройствам)"
+
+    def __str__(self):
+        return f"{self.offer.key}: device_video#{self.id}"

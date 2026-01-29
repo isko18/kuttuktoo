@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
-from .models import SiteSettings, Offer
-from .serializers import SiteSettingsSerializer, OfferPublicSerializer
+from .models import SiteSettings, Offer, OfferDeviceVideo
+from .serializers import SiteSettingsSerializer, OfferPublicSerializer, OfferDeviceVideoSerializer
 
 
 class SiteSettingsView(generics.RetrieveAPIView):
@@ -22,3 +22,15 @@ class OfferListView(generics.ListAPIView):
             .prefetch_related("videos", "features")
             .order_by("sort_order", "id")
         )
+
+
+class OfferDeviceVideoListView(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = OfferDeviceVideoSerializer
+
+    def get_queryset(self):
+        key = self.kwargs.get("key")
+        qs = OfferDeviceVideo.objects.select_related("offer").order_by("sort_order", "id")
+        if key:
+            qs = qs.filter(offer__key=key)
+        return qs
